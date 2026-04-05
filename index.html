@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas Edge V5</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #ffffff;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+  .container { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+  }
+  h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+  .header-sub { font-size: 14px; color: #6b7280; margin-top: 4px; }
+  .btn {
+    background: #1a1a1a; color: #fff; border: none; padding: 10px 20px;
+    border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .btn:hover { background: #333; }
+  .btn:disabled { background: #d1d5db; color: #6b7280; cursor: default; }
+  .status { padding: 14px 16px; border-radius: 10px; font-size: 14px; margin-bottom: 20px; font-weight: 500; }
+  .status-ok { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
+  .status-none { background: #fefce8; border: 1px solid #fef08a; color: #a16207; }
+  .status-error { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+  .status-loading { background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; }
+  .signal-card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+    padding: 20px 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .signal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+  }
+  .signal-left { display: flex; align-items: center; gap: 10px; }
+  .buy-tag {
+    background: #15803d; color: #fff; padding: 4px 10px; border-radius: 6px;
+    font-weight: 600; font-size: 12px; letter-spacing: 0.5px;
+  }
+  .ticker { font-size: 22px; font-weight: 700; }
+  .price { font-size: 22px; font-weight: 700; text-align: right; }
+  .price-label { font-size: 12px; color: #9ca3af; font-weight: 400; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .stat { background: #f9fafb; padding: 12px 14px; border-radius: 8px; border: 1px solid #f3f4f6; }
+  .stat-label { font-size: 11px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+  .stat-value { font-size: 18px; font-weight: 600; margin-top: 2px; color: #1a1a1a; }
+  .stat-value.red { color: #dc2626; }
+  .stat-value.green { color: #15803d; }
+  .stat-value.blue { color: #2563eb; }
+  .exit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+  .exit-box { padding: 12px 14px; border-radius: 8px; }
+  .exit-stop { background: #fef2f2; border: 1px solid #fecaca; }
+  .exit-stop .stat-label { color: #b91c1c; }
+  .exit-stop .stat-value { color: #dc2626; }
+  .exit-profit { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .exit-profit .stat-label { color: #15803d; }
+  .exit-profit .stat-value { color: #16a34a; }
+  .exit-time { background: #fefce8; border: 1px solid #fef08a; }
+  .exit-time .stat-label { color: #a16207; }
+  .exit-time .stat-value { color: #d97706; }
+  .rules {
+    margin-top: 32px; padding: 20px 24px; background: #f9fafb;
+    border: 1px solid #e5e7eb; border-radius: 12px;
+    font-size: 13px; color: #4b5563; line-height: 1.7;
+  }
+  .rules-title { color: #1a1a1a; font-weight: 600; font-size: 14px; margin-bottom: 12px; }
+  .rules strong { color: #374151; }
+  .log {
+    margin-top: 20px; padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb;
+    border-radius: 10px; font-size: 12px; color: #6b7280;
+    font-family: 'SF Mono', 'Fira Code', monospace; max-height: 180px; overflow-y: auto;
+  }
+  .log-line { margin-bottom: 3px; }
+  .footer {
+    margin-top: 48px; text-align: center; font-size: 12px; color: #9ca3af;
+    border-top: 1px solid #f3f4f6; padding-top: 20px;
+  }
+  .empty { text-align: center; padding: 48px 20px; color: #6b7280; }
+  .empty-title { font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 4px; }
+  .empty-sub { font-size: 14px; color: #9ca3af; }
+  @media (max-width: 600px) {
+    .container { padding: 24px 16px; }
+    .exit-grid { grid-template-columns: 1fr; }
+    .header { flex-direction: column; }
+    h1 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>Atlas Edge V5</h1>
+      <div class="header-sub">High-conviction dip scanner &middot; Daily at 4:00 PM ET</div>
+    </div>
+    <button class="btn" id="scanBtn" onclick="runScan()">Run scan</button>
+  </div>
+  <div id="results"></div>
+  <div class="rules">
+    <div class="rules-title">Strategy rules</div>
+    <strong>Entry (all 5 must be true):</strong><br>
+    RSI(2) &lt; 5 &middot; IBS &lt; 0.10 &middot; Volume &gt; 150% avg &middot; Close &gt; 200 MA &middot; Price &gt; $20<br><br>
+    <strong>Exit priority:</strong><br>
+    1. Vol stop: 2.5x ATR below entry (set GTC stop on TD)<br>
+    2. Invalidation: close &lt; 200 MA<br>
+    3. First profitable close: close &gt; entry &rarr; sell<br>
+    4. Time stop: day 3 close &rarr; sell regardless<br><br>
+    <strong>Execution:</strong><br>
+    4:00 PM signal &rarr; 4:05 PM LIMIT order on TD (Day+EXT) &rarr; Set GTC stop loss immediately
+  </div>
+  <div class="footer">Atlas Edge V5 &middot; Paper trading only &middot; Not financial advice</div>
+</div>
+<script>
+async function runScan() {
+  var btn = document.getElementById('scanBtn');
+  var results = document.getElementById('results');
+  btn.disabled = true;
+  btn.textContent = 'Scanning...';
+  results.innerHTML = '<div class="status status-loading">Scanning 200 stocks \u2014 this takes 1\u20132 minutes</div>';
+  try {
+    var res = await fetch('/api/scan');
+    var data = await res.json();
+    if (data.error) {
+      results.innerHTML = '<div class="status status-error">' + data.error + '</div>';
+      btn.disabled = false; btn.textContent = 'Run scan'; return;
+    }
+    var html = '';
+    if (data.signals && data.signals.length > 0) {
+      html += '<div class="status status-ok">' + data.signals.length + ' signal' + (data.signals.length > 1 ? 's' : '') + ' found \u00b7 ' + data.date + ' \u00b7 ' + data.scanned + ' stocks scanned</div>';
+    } else {
+      html += '<div class="status status-none">No signals today \u00b7 ' + (data.date||'') + ' \u00b7 ' + (data.scanned||0) + ' stocks scanned</div>';
+    }
+    if (data.signals) {
+      for (var s of data.signals) {
+        html += '<div class="signal-card"><div class="signal-header"><div class="signal-left"><span class="buy-tag">BUY</span><span class="ticker">' + s.ticker + '</span></div><div><div class="price">$' + parseFloat(s.close).toFixed(2) + '</div><div class="price-label">entry price</div></div></div><div class="grid"><div class="stat"><div class="stat-label">RSI(2)</div><div class="stat-value red">' + s.rsi + '</div></div><div class="stat"><div class="stat-label">IBS</div><div class="stat-value red">' + s.ibs + '</div></div><div class="stat"><div class="stat-label">Volume</div><div class="stat-value blue">' + s.volRatio + 'x</div></div><div class="stat"><div class="stat-label">ATR(14)</div><div class="stat-value">$' + s.atr + '</div></div></div><div class="exit-grid"><div class="exit-box exit-stop"><div class="stat-label">Vol stop</div><div class="stat-value">$' + s.atrStop + '</div><div class="stat-label">-' + s.atrStopPct + '%</div></div><div class="exit-box exit-profit"><div class="stat-label">Take profit</div><div class="stat-value">1st close</div><div class="stat-label">above entry</div></div><div class="exit-box exit-time"><div class="stat-label">Time stop</div><div class="stat-value">3 days</div><div class="stat-label">kill switch</div></div></div></div>';
+      }
+    }
+    if (!data.signals || data.signals.length === 0) {
+      html += '<div class="empty"><div class="empty-title">No signals today</div><div class="empty-sub">The strategy is selective by design. Most days produce zero signals.</div></div>';
+    }
+    if (data.log) {
+      html += '<div class="log">';
+      for (var line of data.log) { html += '<div class="log-line">' + line + '</div>'; }
+      html += '</div>';
+    }
+    results.innerHTML = html;
+  } catch (e) {
+    results.innerHTML = '<div class="status status-error">Scan failed: ' + e.message + '</div>';
+  }
+  btn.disabled = false; btn.textContent = 'Run scan';
+}
+</script>
+</body>
+</html>

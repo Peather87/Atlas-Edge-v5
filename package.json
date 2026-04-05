@@ -1,0 +1,6 @@
+{
+  "name": "atlas-edge-v5",
+  "version": "1.0.0",
+  "description": "Atlas Edge V5 - High-conviction dip scanner with SMS alerts",
+  "private": true
+}

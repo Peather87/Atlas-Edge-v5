@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Environment variables are set in Netlify UI:
+# POLYGON_API_KEY, TWILIO_SID, TWILIO_AUTH, TWILIO_FROM, TWILIO_TO
